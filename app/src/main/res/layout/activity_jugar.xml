@@ -6,27 +6,74 @@
     android:layout_height="match_parent"
     tools:context=".Jugar">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Lo sentimos, por el momento no se puede jugar Bop It. Estamos trabajando para ello :D"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.181" />
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="-16dp">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="284dp"
-        android:layout_height="361dp"
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/nota_musical_ic" />
+
+        <Button
+            android:id="@+id/button_on"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="106dp"
+            android:layout_height="65dp"
+            android:text="On" />
+
+        <Button
+            android:id="@+id/button_off"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="103dp"
+            android:layout_height="64dp"
+            android:text="Off" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="379dp"
+        android:layout_height="589dp"
+        android:layout_marginStart="4dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.654"
-        app:srcCompat="@drawable/caratriste" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textViewTouchEvent"
+            android:layout_width="match_parent"
+            android:layout_height="313dp"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textSize="60sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/button_victoria"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="136dp"
+            android:backgroundTint="#FFEB3B"
+            android:text="Victoria"
+            android:textSize="30dp" />
+
+        <Button
+            android:id="@+id/button_derrota"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="130dp"
+            android:backgroundTint="#2196F3"
+            android:text="Derrota"
+            android:textSize="30dp" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
