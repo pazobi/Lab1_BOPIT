@@ -1,8 +1,15 @@
 package com.example.lab1_bopit
 
+import android.content.Intent
+import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.media.MediaPlayer
+import android.os.Handler
+import android.os.Looper
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.ArrayAdapter
@@ -10,8 +17,9 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import java.util.Random
 
-class Jugar : AppCompatActivity() {
+class Jugar : AppCompatActivity(), SensorEventListener {
 
     private lateinit var victorySnFx: MediaPlayer;
     private lateinit var ambientSnFx: MediaPlayer;
@@ -23,7 +31,17 @@ class Jugar : AppCompatActivity() {
 
     private lateinit var gestureDetector: GestureDetector
 
+    private val accel = arrayOf(0.0, 0.0, 0.0)
+
     private lateinit var textViewTouchEvent: TextView
+    private val instrucciones = arrayOf("Fling it", "Scroll it", "Down it", "Tap it","Shake it")
+    lateinit var gameText:TextView
+    val random = Random()
+    public var num = 0
+    public var siguiente = false
+    private var timeGame = 5000L;
+    public var currentNumer = 0
+    var gameHandler: Handler = Handler(Looper.getMainLooper())
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,14 +49,12 @@ class Jugar : AppCompatActivity() {
         setContentView(R.layout.activity_jugar)
 
         gestureDetector = GestureDetector(this, GestureListener())
-        //mDetector.setOnDoubleTapListener(this)
 
         textViewTouchEvent = findViewById(R.id.textViewTouchEvent)
 
         buttonOff = findViewById(R.id.button_off)
         buttonOn = findViewById(R.id.button_on)
-        buttonVictory=findViewById(R.id.button_victoria)
-        buttonDefeat = findViewById(R.id.button_derrota)
+
 
         ambientSnFx = MediaPlayer.create(applicationContext, R.raw.musica_ambiente)
 
@@ -48,19 +64,6 @@ class Jugar : AppCompatActivity() {
 
         victorySnFx = MediaPlayer.create(applicationContext, R.raw.victoria)
         defeatSnFx = MediaPlayer.create(applicationContext, R.raw.derrota);
-
-
-
-        buttonVictory.setOnClickListener()
-        {
-            victorySnFx.start();
-            ambientSnFx.pause();
-        }
-
-        buttonDefeat.setOnClickListener(){
-            defeatSnFx.start();
-            ambientSnFx.pause();
-        }
 
         buttonOff.setOnClickListener(){
             victorySnFx.pause();
@@ -73,7 +76,19 @@ class Jugar : AppCompatActivity() {
             ambientSnFx.isLooping = true;
         }
 
+        gameText = findViewById<TextView>(R.id.instruction);
+
+        num = Math.abs(random.nextInt(instrucciones.size))
+        gameText.text = instrucciones[num]
+
+        val delayMillis = timeGame.toLong()
+        gameHandler.postDelayed(nextGameRunnable, delayMillis)
+
+        displayTimerHandler.postDelayed(displayTimerRunnable, displayTimerMillis)
+
     }
+
+    private val nextGameRunnable = Runnable { PlayGame() }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(event)
@@ -87,36 +102,42 @@ class Jugar : AppCompatActivity() {
             e1: MotionEvent, e2: MotionEvent,
             velocityX: Float, velocityY: Float
         ): Boolean {
-            showToast("onFling")
             textViewTouchEvent.text = "OnFling"
-
+            if(currentNumer == 0 && !siguiente )
+            {
+                gameWin();
+            }
             return true
         }
 
         override fun onDown(e: MotionEvent): Boolean {
-            showToast("onDown")
             textViewTouchEvent.text = "OnDown"
+            if(currentNumer == 2 && !siguiente )
+            {
+                gameWin();
+            }
             return true
         }
 
         override fun onSingleTapUp(e: MotionEvent): Boolean {
-            showToast("onSingleTapUp")
             textViewTouchEvent.text = "OnSingleTapUp"
+            if(currentNumer == 3 && !siguiente )
+            {
+                gameWin();
+            }
             return true
         }
 
-        override fun onLongPress(e: MotionEvent) {
-            showToast("onLongPress")
-            textViewTouchEvent.text = "OnlongPress"
-
-        }
 
         override fun onScroll(
             e1: MotionEvent, e2: MotionEvent,
             distanceX: Float, distanceY: Float
         ): Boolean {
-            showToast("onScroll")
             textViewTouchEvent.text = "OnScroll"
+            if(currentNumer == 1 && !siguiente )
+            {
+                gameWin();
+            }
             return true
         }
     }
@@ -128,7 +149,83 @@ class Jugar : AppCompatActivity() {
         defeatSnFx.pause()
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    private fun PlayGame() {
+
+        if(siguiente)
+        {
+            siguiente = false;
+            gameText.text = instrucciones[currentNumer]
+            timeGame -= displayTimerMillis
+            displayTime = timeGame.toFloat()/1000
+            gameHandler.postDelayed(nextGameRunnable, timeGame)
+        }
+        else
+        {
+            gameText.setTextColor(Color.RED)
+            val value = 1000
+            val delayMillis = value.toLong()
+
+            val handler = Handler(Looper.getMainLooper())
+            handler.postDelayed({
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+            }, delayMillis)
+        }
+
     }
+
+    private fun gameWin()
+    {
+        gameText.setTextColor(Color.GREEN)
+        siguiente = true
+
+        currentNumer = Math.abs(random.nextInt(instrucciones.size))
+
+        gameHandler.removeCallbacks(nextGameRunnable)
+        gameHandler.postDelayed(nextGameRunnable, 100)
+    }
+
+    var displayTime: Float = timeGame.toFloat()/1000
+    val displayTimerMillis: Long = 100
+    val displayTimerHandler: Handler = Handler(Looper.getMainLooper())
+    private val displayTimerRunnable = Runnable {
+
+        displayTime -= 0.1f;
+        displayTime = Math.max(displayTime, 0f)
+        callDisplayTime()
+    }
+
+    private fun callDisplayTime()
+    {
+        displayTimerHandler.postDelayed(displayTimerRunnable, displayTimerMillis)
+    }
+
+    override fun onSensorChanged(p0: SensorEvent?) {
+        val alpha: Float = 0.8f
+        var gravity = 9.8;
+
+        if(p0 != null){
+            var gravity_1 = alpha * gravity + (1 - alpha) * p0.values[0]
+            var gravity_2 = alpha * gravity + (1 - alpha) * p0.values[1]
+            var gravity_3 = alpha * gravity + (1 - alpha) * p0.values[2]
+
+            // Remove the gravity contribution with the high-pass filter.
+            accel[0] = p0.values[0] - gravity_1
+            accel[1] = p0.values[1] - gravity_2
+            accel[2] = p0.values[2] - gravity_3
+
+            if(accel[1] > 0.5f)
+            {
+                if(currentNumer == 4 && !siguiente)
+                {
+                    gameWin()
+                }
+            }
+        }
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+
+    }
+
 }

@@ -58,22 +58,15 @@
             android:textSize="60sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/button_victoria"
-            style="@style/Widget.AppCompat.Button.Colored"
+        <TextView
+            android:id="@+id/instruction"
             android:layout_width="match_parent"
-            android:layout_height="136dp"
-            android:backgroundTint="#FFEB3B"
-            android:text="Victoria"
-            android:textSize="30dp" />
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textSize="60dp"/>
 
-        <Button
-            android:id="@+id/button_derrota"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:backgroundTint="#2196F3"
-            android:text="Derrota"
-            android:textSize="30dp" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
